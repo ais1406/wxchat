@@ -5,8 +5,9 @@ import threading
 
 import rendezvous
 
-defaulthost = '192.168.0.53'
+defaulthost = '192.168.0.13'
 port = 50000
+encoding = 'utf-8'
 
 class ChatConnect(threading.Thread):
 
@@ -51,7 +52,9 @@ class ChatConnect(threading.Thread):
  
         self.msgLock.acquire()
         if self.numMsg > 0:
-            self.socket.send(self.msg.pop(0))
+            chunk = self.msg.pop(0)
+            chunk = chunk.encode(encoding)
+            self.socket.send(chunk)
             self.numMsg -= 1
         self.msgLock.release()
 

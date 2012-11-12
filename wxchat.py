@@ -32,8 +32,9 @@ class ChatFrame(wx.Frame):
         self.statusBar.SetFieldsCount(2)
         # A menu to set the server's host name...
         self._createMenuBar()
+	banner_t = u"Chat Client For MaxOSX 가나다"
         banner = wx.StaticText(self.panel, -1,
-                    "Chat Client for Linux",
+                    banner_t,
                     style = wx.ALIGN_CENTER)
         banner.SetFont(wx.Font(16, wx.ROMAN, wx.SLANT, wx.NORMAL))
         # The window for reading chat messages
@@ -146,7 +147,6 @@ class ChatFrame(wx.Frame):
         self.readPos = []
 
     def add_readWin(self, msg):
-       
         self.readWin.AppendText(msg)
         self.readPos.append(self.readWin.GetInsertionPoint())
         if len(self.readPos) > 10:

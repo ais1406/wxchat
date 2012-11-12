@@ -10,9 +10,8 @@ from itertools import cycle
 
 MAX_INDEX = 100                      # The max of cyclic index
 MAX_LEN = 100                         # Message queue length
-host = '192.168.0.53'                            # Bind to all interfaces
-port = 30000
-
+host = '192.168.0.13'                            # Bind to all interfaces
+port = 50000
 
 def mesg_index(old, last, new):
 
@@ -93,8 +92,7 @@ def sendAll(sock, lastread):
     if reading == None: return lastread
     for (last,timeStmp ,msg) in reading:
         #sock.send("At %s -- %s" % (time.asctime(timeStmp), msg))
-	msg=msg.encode('utf-8')        
-	sock.send(msg)
+        sock.send(msg)
     return last
 
 def clientExit(sock, peer, error=None):
@@ -102,10 +100,8 @@ def clientExit(sock, peer, error=None):
     print "A disconnect by " + peer
     if error:
         msg = peer + " has exited -- " + error + "\r\n"
-	msg=msg.encode('utf-8')
     else:
         msg = peer + " has exited\r\n"
-	msg = msg.encode('utf-8')
     chatQueue.writer(msg)
 
 def handlechild(clientsock):
@@ -117,16 +113,13 @@ def handlechild(clientsock):
     peer = clientsock.getpeername()
     print "Got connection from ", peer
     msg = str(peer) + " has joined\r\n"
-    msg=msg.decode('utf-8')
     chatQueue.writer(msg)
     while 1:
        
         lastread = sendAll(clientsock, lastread)
         try:
             data = clientsock.recv(4096)
-	    data=data.decode('utf-8')
-	    print type(data)
-            print data.encode('utf-8')
+            print data
         except socket.timeout:
             continue
         except socket.error:
