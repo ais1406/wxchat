@@ -1,0 +1,9 @@
+*.pyc
+*~
+.DS_Store
+._.DS_Store
+._rendezvous.py
+.project
+.pydevproject
+.settings/
+
