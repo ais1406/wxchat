@@ -5,24 +5,24 @@ import sys
 import os
 import threading
 import time
-#import traceback
+
 from itertools import cycle
 
-MAX_INDEX = 100                      # The max of cyclic index
-MAX_LEN = 100                         # Message queue length
-host = '192.168.0.13'                            # Bind to all interfaces
+MAX_INDEX = 100                      
+MAX_LEN = 100                       
+host = '192.168.0.13'                            
 port = 50000
 
 def mesg_index(old, last, new):
 
     if new >= old:
-        # normal case
+        
         if last >= old and last < new:
             return (last - old + 1)
         else:
             return 0
     else:
-        # cyclic roll over (new < old)
+        
         if last >= old:
             return (last - old + 1)
         elif last < new:
@@ -45,7 +45,7 @@ class MSGQueue(object):
         self.readBlock = threading.Lock()
 
     def reader(self, lastread):
-        "Reader of readers and writers algorithm"
+        
         self.readPending.acquire()
         self.readBlock.acquire()
         self.mutex1.acquire()
@@ -54,13 +54,13 @@ class MSGQueue(object):
         self.mutex1.release()
         self.readBlock.release()
         self.readPending.release()
-        # here is the critical section
-        if lastread == self.current: # or not len(self.msg):
+    
+        if lastread == self.current: 
             retVal = None
         else:
             MsgIndex = mesg_index(self.msg[0][0], lastread, self.current)
             retVal = self.msg[MsgIndex:]
-        # End of critical section
+        
         self.mutex1.acquire()
         self.readers = self.readers - 1
         if self.readers == 0: self.writeBlock.release()
@@ -68,18 +68,18 @@ class MSGQueue(object):
         return retVal
 
     def writer(self, data):
-        "Writer of readers and writers algorithm"
+       
         self.mutex2.acquire()
         self.writers = self.writers + 1
         if self.writers == 1: self.readBlock.acquire()
         self.mutex2.release()
         self.writeBlock.acquire()
-        # here is the critical section
+        
         self.current = self.cyclic_count.next()
         self.msg.append((self.current, time.localtime(), data))
         while len(self.msg) > MAX_LEN:
-            del self.msg[0]     # remove oldest item
-        # End of critical section
+            del self.msg[0]    
+        
         self.writeBlock.release()
         self.mutex2.acquire()
         self.writers = self.writers - 1
@@ -91,7 +91,6 @@ def sendAll(sock, lastread):
     reading = chatQueue.reader(lastread)
     if reading == None: return lastread
     for (last,timeStmp ,msg) in reading:
-        #sock.send("At %s -- %s" % (time.asctime(timeStmp), msg))
         sock.send(msg)
     return last
 
@@ -148,15 +147,15 @@ def handlechild(clientsock):
             else:
                 msg = "%s is leaving now\r\n" % (str(peer))
             chatQueue.writer(msg)
-            break            # exit the loop to disconnect
+            break          
 
         else:
-            # Not a special command, but a chat message
+           
             chatQueue.writer("Message from %s:\t%s \n"% (str(peer), data))
 
     clientsock.close()
 
-# Begin the main part of the program
+
 def main():
    
     global chatQueue
