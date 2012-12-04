@@ -130,17 +130,9 @@ def handlechild(clientsock):
             break
         if not len(data): 
             clientExit(clientsock, str(peer))
-            break
+            break;
 
-        if data.startswith('/nick'):
-            oldpeer = peer
-            peer = data.replace('/nick', '', 1).strip()
-            if len(peer):
-                chatQueue.writer("%s now goes by %s\r\n" \
-                                % (str(oldpeer), str(peer)))
-            else: peer = oldpeer
-
-        elif data.startswith('/quit'):
+        if data.startswith('/quit'):
             bye = data.replace('/quit', '', 1).strip()
             if len(bye):
                 msg = "%s is leaving now -- %s\r\n" % (str(peer), bye)
