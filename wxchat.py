@@ -25,23 +25,23 @@ class ChatFrame(wx.Frame):
         
         self.panel = wx.Panel(self)
         self.panel.SetBackgroundColour('white')
-        self.host = host  # host is global variable
+        self.host = host  
         self.Bind(wx.EVT_CLOSE, self.OnExit)
-        #create a StatusBar and give it 2 columns
+     
         self.statusBar = self.CreateStatusBar()
         self.statusBar.SetFieldsCount(2)
-        # A menu to set the server's host name...
+       
         self._createMenuBar()
-	banner_t = u"Chat Client For MaxOSX 가나다"
+	banner_t = u"Chat Client For MaxOSX"
         banner = wx.StaticText(self.panel, -1,
                     banner_t,
                     style = wx.ALIGN_CENTER)
         banner.SetFont(wx.Font(16, wx.ROMAN, wx.SLANT, wx.NORMAL))
-        # The window for reading chat messages
+    
         self.readWin = wx.TextCtrl(self.panel, -1,
              style = wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_WORDWRAP)
         self.readWin.SetBackgroundColour('white')
-        # The windows for writing chat messages
+ 
         self.writeWin = wx.TextCtrl(self.panel, -1,
              size = (xmax*.95, ymax*0.15),
              style = wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_WORDWRAP )
@@ -53,7 +53,7 @@ class ChatFrame(wx.Frame):
         self.Bind(wx.EVT_TEXT_ENTER, self.send)
 
    
-        # Create a BoxSizer which grows in the vertical direction
+        
         sizer = wx.BoxSizer(wx.VERTICAL)
         sizer.Add(banner, 0,
                 wx.ALIGN_TOP | wx.ALL | wx.FIXED_MINSIZE | wx.ALIGN_CENTER_HORIZONTAL, 5)
@@ -63,9 +63,9 @@ class ChatFrame(wx.Frame):
         sizer.Add(self.inputWin, 0,
                 wx.EXPAND | wx.BOTTOM | wx.LEFT | wx.RIGHT | wx.ALIGN_TOP, 5)
       
-        # Tell our panel to use this new Sizer
+        
         self.panel.SetSizer(sizer)
-        # Tell our panel to calculate the size of its items.
+       
         self.panel.Layout()
         
        
@@ -73,7 +73,7 @@ class ChatFrame(wx.Frame):
         self._CreatToolBar()
         
 
-        #-- Graphics now set-up, set-up Chat client
+       
         self.rendezvous = rendezvous.Rendezvous(
                                     self.connected,
                                     self.chatDisplay,
@@ -84,7 +84,7 @@ class ChatFrame(wx.Frame):
         self.blank_line_len = len(os.linesep)
         self._not_connected()
         wx.EndBusyCursor()
-    #-- end of __init__
+    
     
     def _CreatToolBar(self):
         
@@ -139,8 +139,6 @@ class ChatFrame(wx.Frame):
         self.add_writeWin(
             "this window msg from user\n")
 
-    # Next several functions implement auto-scrolling in the read and write
-    # windows.
     def clear_readWin(self):
        
         self.readWin.Clear()
@@ -190,25 +188,24 @@ class ChatFrame(wx.Frame):
     def connect(self, event):
         wx.BeginBusyCursor()
         if self.connected:
-            # a disconnect request
+            
             name = self.getText()
             self.net.send("/quit " + name)
             self.add_writeWin('\n')
             self.net.join()
-            # Note: finish this up in lostConnection
+           
         else:
-            # a connect request
+           
             self.add_readWin('\n')
-            # A thread to listen to the network and 
-            # display messages from server
+           
+            
             self.net = ChatConnect(self.host,
                             self.rendezvous.connected,
                             self.rendezvous.display,
                             self.rendezvous.lost,
                             )
             self.net.start()
-            # Note: finish this up in connected
-        #--
+          
         wx.EndBusyCursor()
 
     def send(self, event):
@@ -249,7 +246,6 @@ class ChatFrame(wx.Frame):
     def OnExit(self, event):
        
         if self.connected:
-            #self.net.send("/quit")
             self.net.join()
         self.Destroy()
   
